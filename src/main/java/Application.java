@@ -1,9 +1,11 @@
-import Services.ImageGenerator;
+import Services.ContentGenerator;
 import Entity.QRCodeData;
 import Services.WriterToPdf;
 import com.google.zxing.WriterException;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
+import com.itextpdf.text.pdf.PdfPTable;
+
 import java.io.IOException;
 
 /**
@@ -15,7 +17,7 @@ public class Application {
         /**
          * параметры для теста
          */
-        String approvedText = "Утвержено в электронном виде";
+        String approvedText = "Утверждено в электронном виде";
         String setStatusDate = "15.03.2021";
         String projectRequirementNumber = "100000001001744";
         String separatorOne = "/";
@@ -28,12 +30,13 @@ public class Application {
         QRCodeData qrCodeData = new QRCodeData(approvedText, setStatusDate, projectRequirementNumber, separatorOne,
                 projectRequirementVersion, dmsId, separatorTwo, dmsType, questionnaireNumber);
 
-        ImageGenerator generator = new ImageGenerator();
+        ContentGenerator generator = new ContentGenerator();
 
         try {
-            Image image = generator.createQRCode(qrCodeData.toString(), 76, 76);
+            Image image = generator.createQRCode(qrCodeData.toString(), 60, 60);
+            PdfPTable table = generator.createCodeDataTable(qrCodeData);
             WriterToPdf writerToPdf = new WriterToPdf();
-            writerToPdf.writeToPdf("src/main/resources/ИсходникПример.pdf", image);
+            writerToPdf.writeToPdf("src/main/resources/ИсходникПример.pdf", image, table);
         } catch (WriterException | IOException | DocumentException e) {
             e.printStackTrace();
         }

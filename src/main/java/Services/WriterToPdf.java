@@ -4,6 +4,7 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
 
@@ -17,7 +18,7 @@ public class WriterToPdf {
      * @throws IOException
      * @throws DocumentException
      */
-    public void writeToPdf(String srcFile, Image image) throws IOException, DocumentException {
+    public void writeToPdf(String srcFile, Image image, PdfPTable table) throws IOException, DocumentException {
         File destFile = new File("src/main/resources", "ResultPDF.pdf");//результирующий
         OutputStream fos = new FileOutputStream(destFile);
 
@@ -28,15 +29,17 @@ public class WriterToPdf {
         float width = pageSize.getWidth();
         float height = pageSize.getHeight();
 
-        float absoluteX = image.getWidth();//width - image.getWidth() - 38;
-        float absoluteY = height - image.getHeight() - 38;
+        float absoluteX = 58;//image.getWidth();//width - image.getWidth() - 38;
+        float absoluteY = height - image.getHeight() - 31; //38;
         //Задать позицию картинки на странице
         image.setAbsolutePosition(absoluteX, absoluteY);
         // цикл для всех страниц в файле
         for (int i = 1; i <= pdfReader.getNumberOfPages(); i++) {
             PdfContentByte pdfContentByte = pdfStamper.getOverContent(i);
-            if (i == 1) // добавление картинки только на 1ю страницу
+            if (i == 1) { // добавление QR кода и подписи  данных только на 1ю страницу
                 pdfContentByte.addImage(image);
+                table.writeSelectedRows(0, -1, 123, 813, pdfContentByte);
+            }
         }
         pdfStamper.close();
         fos.close();
